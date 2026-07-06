@@ -8,7 +8,57 @@ const clearBtn = document.getElementById('clearBtn');
 const dealerDisplayName = document.getElementById('dealerDisplayName');
 const logoutBtn = document.getElementById('logoutBtn');
 
+const modeScanBtn = document.getElementById('modeScanBtn');
+const modeManualBtn = document.getElementById('modeManualBtn');
+const scanMode = document.getElementById('scanMode');
+const manualMode = document.getElementById('manualMode');
+const manualBarcode = document.getElementById('manualBarcode');
+const useManualBtn = document.getElementById('useManualBtn');
+
 let searchDebounce = null;
+
+// ---- Scan vs. manual entry toggle ----
+function showScanMode() {
+  modeScanBtn.classList.add('active');
+  modeManualBtn.classList.remove('active');
+  scanMode.hidden = false;
+  manualMode.hidden = true;
+}
+
+function showManualMode() {
+  modeManualBtn.classList.add('active');
+  modeScanBtn.classList.remove('active');
+  manualMode.hidden = false;
+  scanMode.hidden = true;
+  // Stop the camera if it's running so it isn't left on in the background
+  if (typeof Scanner !== 'undefined' && typeof Scanner.stop === 'function') {
+    Scanner.stop();
+  }
+  manualBarcode.focus();
+}
+
+modeScanBtn.addEventListener('click', showScanMode);
+modeManualBtn.addEventListener('click', showManualMode);
+
+useManualBtn.addEventListener('click', () => {
+  const value = manualBarcode.value.trim();
+  if (!value) {
+    manualBarcode.focus();
+    return;
+  }
+  barcodeInput.value = value;
+  barcodeInput.dataset.format = 'MANUAL';
+  showMessage(`Serial entered: ${value}`, 'success');
+  manualBarcode.value = '';
+  document.getElementById('msisdn').focus();
+});
+
+manualBarcode.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    useManualBtn.click();
+  }
+});
 
 // Confirm there's a live session; the server also guards this route, but
 // this covers the case of a session expiring while the page stays open.
