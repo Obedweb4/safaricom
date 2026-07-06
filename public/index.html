@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-<title>SIM Line Scanner · Safaricom Dealer</title>
+<title>Dream World Dealer · Dealer Terminal</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css" />
@@ -14,8 +14,8 @@
   <div class="brand">
     <span class="brand-mark">●</span>
     <div class="brand-text">
-      <span class="brand-title">SIM Line Scanner</span>
-      <span class="brand-sub">Safaricom Dealer Terminal</span>
+      <span class="brand-title">Dream World Dealer</span>
+      <span class="brand-sub">SIM Line Scanner</span>
     </div>
   </div>
   <div class="dealer-field">
@@ -31,22 +31,38 @@
 
   <!-- Scanner panel -->
   <section class="scanner-card" aria-label="Barcode scanner">
-    <div class="scanner-bezel">
-      <div id="reader" class="reader"></div>
-      <div class="reticle" aria-hidden="true">
-        <span class="corner tl"></span><span class="corner tr"></span>
-        <span class="corner bl"></span><span class="corner br"></span>
-        <span class="scanline"></span>
+    <div class="mode-toggle" role="tablist">
+      <button id="modeScanBtn" class="mode-btn active" type="button">📷 Scan barcode</button>
+      <button id="modeManualBtn" class="mode-btn" type="button">⌨️ Type serial manually</button>
+    </div>
+
+    <div id="scanMode">
+      <div class="scanner-bezel">
+        <div id="reader" class="reader"></div>
+        <div class="reticle" aria-hidden="true">
+          <span class="corner tl"></span><span class="corner tr"></span>
+          <span class="corner bl"></span><span class="corner br"></span>
+          <span class="scanline"></span>
+        </div>
+        <div id="scanner-idle" class="scanner-idle">
+          <p>Camera is off</p>
+          <button id="startBtn" class="btn btn-primary">Start scanning</button>
+        </div>
       </div>
-      <div id="scanner-idle" class="scanner-idle">
-        <p>Camera is off</p>
-        <button id="startBtn" class="btn btn-primary">Start scanning</button>
+      <div class="scanner-controls">
+        <button id="stopBtn" class="btn btn-ghost" hidden>Stop camera</button>
+        <select id="cameraSelect" class="camera-select" hidden></select>
+        <span id="scanStatus" class="scan-status">Point the camera at the barcode on the SIM pack</span>
       </div>
     </div>
-    <div class="scanner-controls">
-      <button id="stopBtn" class="btn btn-ghost" hidden>Stop camera</button>
-      <select id="cameraSelect" class="camera-select" hidden></select>
-      <span id="scanStatus" class="scan-status">Point the camera at the barcode on the SIM pack</span>
+
+    <div id="manualMode" hidden>
+      <label class="field">
+        <span>Serial / ICCID number</span>
+        <input id="manualBarcode" type="text" placeholder="Type the serial number printed on the SIM pack" autocomplete="off" />
+      </label>
+      <button id="useManualBtn" class="btn btn-primary" type="button">Use this serial</button>
+      <p class="scan-status">No camera needed — type the number and it fills the form below.</p>
     </div>
   </section>
 
@@ -106,6 +122,8 @@
   </section>
 
 </main>
+
+<footer class="app-footer">Powered by <strong>Obed Tech</strong></footer>
 
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="/js/scanner.js"></script>

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dealer Login · SIM Line Scanner</title>
+<title>Dealer Login · Dream World Dealer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css" />
@@ -52,13 +52,21 @@
     display: none;
   }
   .login-error.visible { display: block; }
+  .powered-by {
+    text-align: center;
+    color: #7b8a83;
+    font-size: 12px;
+    margin-top: 18px;
+    letter-spacing: 0.02em;
+  }
+  .powered-by strong { color: #cfd8d3; }
 </style>
 </head>
 <body class="login-body">
 
 <form id="loginForm" class="login-card" autocomplete="off">
-  <div class="login-brand"><span class="dot">●</span><span class="name">SIM Line Scanner</span></div>
-  <p class="tagline">Safaricom Dealer Terminal — sign in to start scanning</p>
+  <div class="login-brand"><span class="dot">●</span><span class="name">Dream World Dealer</span></div>
+  <p class="tagline">Sign in with your ID to start scanning SIM lines</p>
 
   <p id="loginError" class="login-error"></p>
 
@@ -73,6 +81,8 @@
 
   <button type="submit" class="btn btn-primary">Sign in</button>
 </form>
+
+<p class="powered-by">Powered by <strong>Obed Tech</strong></p>
 
 <script src="/js/login.js"></script>
 </body>
