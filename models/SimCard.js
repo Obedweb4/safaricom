@@ -20,7 +20,21 @@ const SimCardSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // The dealer/agent who scanned this line (from their login session)
+    dealer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Dealer',
+      required: true,
+      index: true,
+    },
+    // Denormalized snapshot of the dealer's details at scan time, so the
+    // ledger and CSV export still read correctly even if a dealer record
+    // is later edited or removed.
     dealerName: {
+      type: String,
+      trim: true,
+    },
+    dealerIdNumber: {
       type: String,
       trim: true,
     },
