@@ -69,8 +69,12 @@ async function loadSession() {
       window.location.href = '/login.html';
       return;
     }
-    const dealer = await res.json();
-    dealerDisplayName.textContent = dealer.fullName;
+    const data = await res.json();
+    if (data.role === 'admin') {
+      window.location.href = '/admin.html';
+      return;
+    }
+    dealerDisplayName.textContent = data.fullName;
   } catch (err) {
     window.location.href = '/login.html';
   }
