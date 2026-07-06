@@ -75,29 +75,35 @@ button, input, select {
 .dealer-field {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 
-.dealer-field label {
-  font-size: 12px;
+.dealer-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+
+.dealer-info-label {
+  font-size: 11px;
   color: #b7c2bd;
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 
-.dealer-field input {
-  background: #1d2527;
-  border: 1px solid #33403a;
-  color: #fff;
-  border-radius: 8px;
-  padding: 8px 12px;
+.dealer-info-name {
   font-size: 14px;
-  width: 200px;
+  font-weight: 600;
+  color: #fff;
 }
 
-.dealer-field input:focus {
-  outline: 2px solid var(--green);
-  outline-offset: 1px;
+.dealer-field .btn-ghost {
+  border-color: #33403a;
+  color: #fff;
+}
+.dealer-field .btn-ghost:hover {
+  background: #1d2527;
 }
 
 /* ---------- Layout ---------- */
