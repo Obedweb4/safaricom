@@ -141,6 +141,51 @@ h2 {
   margin: 0 0 14px;
 }
 
+/* ---------- Mode toggle (scan vs manual) ---------- */
+.mode-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.mode-btn {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.mode-btn.active {
+  background: var(--charcoal);
+  color: #fff;
+  border-color: var(--charcoal);
+}
+
+#manualMode .field {
+  margin-bottom: 12px;
+}
+
+#manualMode #useManualBtn {
+  width: 100%;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+/* ---------- Footer ---------- */
+.app-footer {
+  text-align: center;
+  padding: 24px 0 32px;
+  color: var(--muted);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+.app-footer strong { color: var(--ink); }
+
 /* ---------- Scanner ---------- */
 .scanner-bezel {
   position: relative;
