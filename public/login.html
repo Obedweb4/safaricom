@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Dealer Login · Dream World Dealer</title>
+<title>Login · Dream World Dealer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/css/style.css" />
@@ -38,7 +38,28 @@
   .login-card p.tagline {
     color: var(--muted);
     font-size: 13px;
-    margin: 0 0 24px;
+    margin: 0 0 20px;
+  }
+  .login-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .login-tab {
+    flex: 1;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 9px 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .login-tab.active {
+    background: var(--charcoal);
+    color: #fff;
+    border-color: var(--charcoal);
   }
   .login-card .field { margin-bottom: 16px; }
   .login-card button[type="submit"] { width: 100%; justify-content: center; margin-top: 6px; }
@@ -64,23 +85,43 @@
 </head>
 <body class="login-body">
 
-<form id="loginForm" class="login-card" autocomplete="off">
+<div class="login-card">
   <div class="login-brand"><span class="dot">●</span><span class="name">Dream World Dealer</span></div>
-  <p class="tagline">Sign in with your ID to start scanning SIM lines</p>
+  <p class="tagline">Sign in to start scanning SIM lines</p>
+
+  <div class="login-tabs">
+    <button id="staffTabBtn" class="login-tab active" type="button">Staff</button>
+    <button id="adminTabBtn" class="login-tab" type="button">Admin</button>
+  </div>
 
   <p id="loginError" class="login-error"></p>
 
-  <label class="field">
-    <span>ID number</span>
-    <input id="idNumber" type="text" inputmode="numeric" placeholder="National ID / passport number" required />
-  </label>
-  <label class="field">
-    <span>Full name</span>
-    <input id="fullName" type="text" placeholder="As on your ID" required />
-  </label>
+  <!-- Staff login: ID number + full name -->
+  <form id="staffForm" autocomplete="off">
+    <label class="field">
+      <span>ID number</span>
+      <input id="idNumber" type="text" inputmode="numeric" placeholder="National ID / passport number" required />
+    </label>
+    <label class="field">
+      <span>Full name</span>
+      <input id="fullName" type="text" placeholder="As on your ID" required />
+    </label>
+    <button type="submit" class="btn btn-primary">Sign in</button>
+  </form>
 
-  <button type="submit" class="btn btn-primary">Sign in</button>
-</form>
+  <!-- Admin login: email + password -->
+  <form id="adminForm" autocomplete="off" hidden>
+    <label class="field">
+      <span>Email</span>
+      <input id="adminEmail" type="email" placeholder="admin@example.com" required />
+    </label>
+    <label class="field">
+      <span>Password</span>
+      <input id="adminPassword" type="password" placeholder="••••••••" required />
+    </label>
+    <button type="submit" class="btn btn-primary">Sign in as admin</button>
+  </form>
+</div>
 
 <p class="powered-by">Powered by <strong>Obed Tech</strong></p>
 

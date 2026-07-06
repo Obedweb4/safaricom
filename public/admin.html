@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin · Dream World Dealer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+<style>
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+  @media (max-width: 700px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+  }
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .stat-card .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+  }
+  .stat-card .stat-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .admin-layout { max-width: 1160px; margin: 0 auto; padding: 24px; }
+  .status-filter {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">●</span>
+    <div class="brand-text">
+      <span class="brand-title">Dream World Dealer</span>
+      <span class="brand-sub">Admin Dashboard</span>
+    </div>
+  </div>
+  <div class="dealer-field">
+    <div class="dealer-info">
+      <span class="dealer-info-label">Signed in as</span>
+      <span id="adminDisplayEmail" class="dealer-info-name">…</span>
+    </div>
+    <button id="logoutBtn" class="btn btn-ghost small">Sign out</button>
+  </div>
+</header>
+
+<main class="admin-layout">
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Total lines</div><div class="stat-value" id="statTotal">–</div></div>
+    <div class="stat-card"><div class="stat-label">Scanned</div><div class="stat-value" id="statScanned">–</div></div>
+    <div class="stat-card"><div class="stat-label">Registered</div><div class="stat-value" id="statRegistered">–</div></div>
+    <div class="stat-card"><div class="stat-label">Activated</div><div class="stat-value" id="statActivated">–</div></div>
+  </div>
+
+  <section class="ledger-card" aria-label="All scanned lines">
+    <div class="ledger-head">
+      <h2>All scanned lines</h2>
+      <div class="ledger-actions">
+        <select id="statusFilter" class="status-filter">
+          <option value="">All statuses</option>
+          <option value="scanned">Scanned</option>
+          <option value="registered">Registered</option>
+          <option value="activated">Activated</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <input id="searchInput" type="search" placeholder="Search barcode, MSISDN, dealer, customer…" />
+        <a class="btn btn-ghost small" href="/api/simcards/export.csv">Export CSV</a>
+      </div>
+    </div>
+    <div class="ledger-strip" id="ledgerStrip">
+      <p class="ledger-empty" id="ledgerEmpty">No lines scanned yet.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="app-footer">Powered by <strong>Obed Tech</strong></footer>
+
+<script src="/js/admin.js"></script>
+</body>
+</html>
