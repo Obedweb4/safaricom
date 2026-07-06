@@ -29,9 +29,13 @@ router.post('/login', async (req, res) => {
       dealer = await Dealer.create({ idNumber, fullName, lastLoginAt: new Date() });
     }
 
+    // Clear any previous admin session before starting a dealer one
+    req.session.isAdmin = false;
+    req.session.adminEmail = undefined;
     req.session.dealerId = dealer._id.toString();
 
     res.json({
+      role: 'dealer',
       _id: dealer._id,
       idNumber: dealer.idNumber,
       fullName: dealer.fullName,
@@ -45,15 +49,47 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// GET /api/auth/me - return the currently logged-in dealer, if any
+// POST /api/auth/admin-login - fixed email/password login for the admin.
+// Credentials are read from environment variables so they aren't sitting
+// in the source code; ADMIN_EMAIL/ADMIN_PASSWORD fall back to defaults
+// below only if those env vars haven't been set.
+router.post('/admin-login', (req, res) => {
+  const email = String(req.body.email || '').trim().toLowerCase();
+  const password = String(req.body.password || '');
+
+  const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'techobed4@gmail.com').toLowerCase();
+  const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Trippleo1802';
+
+  if (email !== ADMIN_EMAIL || password !== ADMIN_PASSWORD) {
+    return res.status(401).json({ error: 'Invalid email or password' });
+  }
+
+  // Clear any previous dealer session before starting an admin one
+  req.session.dealerId = undefined;
+  req.session.isAdmin = true;
+  req.session.adminEmail = email;
+
+  res.json({ role: 'admin', email });
+});
+
+// GET /api/auth/me - return the currently logged-in dealer or admin, if any
 router.get('/me', async (req, res) => {
-  if (!req.session || !req.session.dealerId) {
+  if (!req.session) {
     return res.status(401).json({ error: 'Not logged in' });
   }
+
+  if (req.session.isAdmin) {
+    return res.json({ role: 'admin', email: req.session.adminEmail });
+  }
+
+  if (!req.session.dealerId) {
+    return res.status(401).json({ error: 'Not logged in' });
+  }
+
   try {
     const dealer = await Dealer.findById(req.session.dealerId);
     if (!dealer) return res.status(401).json({ error: 'Not logged in' });
-    res.json({ _id: dealer._id, idNumber: dealer.idNumber, fullName: dealer.fullName });
+    res.json({ role: 'dealer', _id: dealer._id, idNumber: dealer.idNumber, fullName: dealer.fullName });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to load session' });

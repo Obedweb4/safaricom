@@ -2,13 +2,10 @@ const express = require('express');
 const router = express.Router();
 const SimCard = require('../models/SimCard');
 const Dealer = require('../models/Dealer');
-const requireAuth = require('../middleware/requireAuth');
-
-// Every route below requires a logged-in dealer session
-router.use(requireAuth);
+const { requireDealer, requireAnyAuth } = require('../middleware/requireAuth');
 
 // POST /api/simcards - save a newly scanned barcode, tagged to the logged-in dealer
-router.post('/', async (req, res) => {
+router.post('/', requireDealer, async (req, res) => {
   try {
     const {
       barcode,
@@ -62,7 +59,7 @@ router.post('/', async (req, res) => {
 });
 
 // GET /api/simcards - list records, newest first, with optional search + pagination
-router.get('/', async (req, res) => {
+router.get('/', requireAnyAuth, async (req, res) => {
   try {
     const { q, status, page = 1, limit = 25 } = req.query;
     const filter = {};
@@ -103,7 +100,7 @@ router.get('/', async (req, res) => {
 });
 
 // GET /api/simcards/export.csv - download all matching records as CSV
-router.get('/export.csv', async (req, res) => {
+router.get('/export.csv', requireAnyAuth, async (req, res) => {
   try {
     const records = await SimCard.find().sort({ createdAt: -1 });
 
@@ -138,7 +135,7 @@ router.get('/export.csv', async (req, res) => {
 });
 
 // PATCH /api/simcards/:id - update dealer/customer info or status after a scan
-router.patch('/:id', async (req, res) => {
+router.patch('/:id', requireAnyAuth, async (req, res) => {
   try {
     const allowedFields = [
       'msisdn',
@@ -166,7 +163,7 @@ router.patch('/:id', async (req, res) => {
 });
 
 // DELETE /api/simcards/:id - remove a record (e.g. mis-scan)
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', requireAnyAuth, async (req, res) => {
   try {
     const record = await SimCard.findByIdAndDelete(req.params.id);
     if (!record) return res.status(404).json({ error: 'Record not found' });
