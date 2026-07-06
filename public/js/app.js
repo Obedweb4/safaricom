@@ -1,4 +1,3 @@
-const dealerNameInput = document.getElementById('dealerName');
 const form = document.getElementById('detailsForm');
 const barcodeInput = document.getElementById('barcode');
 const formMessage = document.getElementById('formMessage');
@@ -6,14 +5,33 @@ const ledgerStrip = document.getElementById('ledgerStrip');
 const ledgerEmpty = document.getElementById('ledgerEmpty');
 const searchInput = document.getElementById('searchInput');
 const clearBtn = document.getElementById('clearBtn');
+const dealerDisplayName = document.getElementById('dealerDisplayName');
+const logoutBtn = document.getElementById('logoutBtn');
 
 let searchDebounce = null;
 
-// Remember the dealer's name on this device between sessions
-dealerNameInput.value = localStorage.getItem('dealerName') || '';
-dealerNameInput.addEventListener('input', () => {
-  localStorage.setItem('dealerName', dealerNameInput.value);
+// Confirm there's a live session; the server also guards this route, but
+// this covers the case of a session expiring while the page stays open.
+async function loadSession() {
+  try {
+    const res = await fetch('/api/auth/me');
+    if (!res.ok) {
+      window.location.href = '/login.html';
+      return;
+    }
+    const dealer = await res.json();
+    dealerDisplayName.textContent = dealer.fullName;
+  } catch (err) {
+    window.location.href = '/login.html';
+  }
+}
+
+logoutBtn.addEventListener('click', async () => {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  window.location.href = '/login.html';
 });
+
+loadSession();
 
 // Called by scanner.js whenever a barcode is decoded from the camera
 window.onBarcodeScanned = (text, format) => {
@@ -70,6 +88,10 @@ async function loadLedger(query = '') {
     const params = new URLSearchParams({ limit: '50' });
     if (query) params.set('q', query);
     const res = await fetch(`/api/simcards?${params.toString()}`);
+    if (res.status === 401) {
+      window.location.href = '/login.html';
+      return;
+    }
     const data = await res.json();
     renderLedger(data.records || []);
   } catch (err) {
@@ -95,7 +117,6 @@ form.addEventListener('submit', async (e) => {
     barcode: barcodeInput.value.trim(),
     barcodeFormat: barcodeInput.dataset.format || '',
     msisdn: document.getElementById('msisdn').value.trim(),
-    dealerName: dealerNameInput.value.trim(),
     customerName: document.getElementById('customerName').value.trim(),
     customerIdNumber: document.getElementById('customerIdNumber').value.trim(),
     status: document.getElementById('status').value,
@@ -113,6 +134,11 @@ form.addEventListener('submit', async (e) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
     });
+    if (res.status === 401) {
+      window.location.href = '/login.html';
+      return;
+    }
+
     const data = await res.json();
 
     if (!res.ok) {
@@ -122,7 +148,6 @@ form.addEventListener('submit', async (e) => {
 
     showMessage('Line saved to the ledger.', 'success');
     form.reset();
-    dealerNameInput.value = localStorage.getItem('dealerName') || '';
     document.getElementById('status').value = 'scanned';
     loadLedger(searchInput.value.trim());
   } catch (err) {
