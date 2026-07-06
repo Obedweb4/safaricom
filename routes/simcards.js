@@ -1,16 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const SimCard = require('../models/SimCard');
+const Dealer = require('../models/Dealer');
+const requireAuth = require('../middleware/requireAuth');
 
-// POST /api/simcards - save a newly scanned barcode
+// Every route below requires a logged-in dealer session
+router.use(requireAuth);
+
+// POST /api/simcards - save a newly scanned barcode, tagged to the logged-in dealer
 router.post('/', async (req, res) => {
   try {
     const {
       barcode,
       barcodeFormat,
       msisdn,
-      dealerName,
-      dealerCode,
       customerName,
       customerIdNumber,
       status,
@@ -19,6 +22,11 @@ router.post('/', async (req, res) => {
 
     if (!barcode || !barcode.trim()) {
       return res.status(400).json({ error: 'barcode is required' });
+    }
+
+    const dealer = await Dealer.findById(req.session.dealerId);
+    if (!dealer) {
+      return res.status(401).json({ error: 'Not logged in' });
     }
 
     const existing = await SimCard.findOne({ barcode: barcode.trim() });
@@ -33,8 +41,10 @@ router.post('/', async (req, res) => {
       barcode: barcode.trim(),
       barcodeFormat,
       msisdn,
-      dealerName,
-      dealerCode,
+      dealer: dealer._id,
+      dealerName: dealer.fullName,
+      dealerIdNumber: dealer.idNumber,
+      dealerCode: dealer.dealerCode,
       customerName,
       customerIdNumber,
       status,
@@ -132,8 +142,6 @@ router.patch('/:id', async (req, res) => {
   try {
     const allowedFields = [
       'msisdn',
-      'dealerName',
-      'dealerCode',
       'customerName',
       'customerIdNumber',
       'status',
