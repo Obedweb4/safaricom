@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>SIM Line Scanner · Safaricom Dealer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">●</span>
+    <div class="brand-text">
+      <span class="brand-title">SIM Line Scanner</span>
+      <span class="brand-sub">Safaricom Dealer Terminal</span>
+    </div>
+  </div>
+  <div class="dealer-field">
+    <label for="dealerName">Dealer / Agent</label>
+    <input id="dealerName" type="text" placeholder="Your name or agent code" autocomplete="off" />
+  </div>
+</header>
+
+<main class="layout">
+
+  <!-- Scanner panel -->
+  <section class="scanner-card" aria-label="Barcode scanner">
+    <div class="scanner-bezel">
+      <div id="reader" class="reader"></div>
+      <div class="reticle" aria-hidden="true">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+        <span class="scanline"></span>
+      </div>
+      <div id="scanner-idle" class="scanner-idle">
+        <p>Camera is off</p>
+        <button id="startBtn" class="btn btn-primary">Start scanning</button>
+      </div>
+    </div>
+    <div class="scanner-controls">
+      <button id="stopBtn" class="btn btn-ghost" hidden>Stop camera</button>
+      <select id="cameraSelect" class="camera-select" hidden></select>
+      <span id="scanStatus" class="scan-status">Point the camera at the barcode on the SIM pack</span>
+    </div>
+  </section>
+
+  <!-- Confirm / details panel -->
+  <section class="details-card" aria-label="SIM record details">
+    <h2>Line details</h2>
+    <form id="detailsForm">
+      <label class="field">
+        <span>Barcode / ICCID</span>
+        <input id="barcode" name="barcode" type="text" placeholder="Scan or type manually" required />
+      </label>
+      <label class="field">
+        <span>Mobile number (MSISDN)</span>
+        <input id="msisdn" name="msisdn" type="text" placeholder="07xx xxx xxx" />
+      </label>
+      <label class="field">
+        <span>Customer name</span>
+        <input id="customerName" name="customerName" type="text" placeholder="Optional" />
+      </label>
+      <label class="field">
+        <span>Customer ID number</span>
+        <input id="customerIdNumber" name="customerIdNumber" type="text" placeholder="Optional" />
+      </label>
+      <label class="field">
+        <span>Status</span>
+        <select id="status" name="status">
+          <option value="scanned">Scanned</option>
+          <option value="registered">Registered</option>
+          <option value="activated">Activated</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Notes</span>
+        <input id="notes" name="notes" type="text" placeholder="Optional" />
+      </label>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">Save line</button>
+        <button type="button" id="clearBtn" class="btn btn-ghost">Clear</button>
+      </div>
+      <p id="formMessage" class="form-message" role="status"></p>
+    </form>
+  </section>
+
+  <!-- Ledger / recent scans -->
+  <section class="ledger-card" aria-label="Recently scanned lines">
+    <div class="ledger-head">
+      <h2>Today's ledger</h2>
+      <div class="ledger-actions">
+        <input id="searchInput" type="search" placeholder="Search barcode, MSISDN, customer…" />
+        <a id="exportBtn" class="btn btn-ghost small" href="/api/simcards/export.csv">Export CSV</a>
+      </div>
+    </div>
+    <div class="ledger-strip" id="ledgerStrip">
+      <p class="ledger-empty" id="ledgerEmpty">No lines scanned yet — your first scan will print here.</p>
+    </div>
+  </section>
+
+</main>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="/js/scanner.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
