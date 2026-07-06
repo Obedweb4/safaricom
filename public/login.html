@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Dealer Login · SIM Line Scanner</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/style.css" />
+<style>
+  body.login-body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--charcoal);
+    padding: 20px;
+  }
+  .login-card {
+    width: 100%;
+    max-width: 380px;
+    background: #fff;
+    border-radius: var(--radius);
+    padding: 32px 28px;
+  }
+  .login-brand {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .login-brand span.dot { color: var(--green); font-size: 18px; }
+  .login-brand span.name {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 18px;
+  }
+  .login-card p.tagline {
+    color: var(--muted);
+    font-size: 13px;
+    margin: 0 0 24px;
+  }
+  .login-card .field { margin-bottom: 16px; }
+  .login-card button[type="submit"] { width: 100%; justify-content: center; margin-top: 6px; }
+  .login-error {
+    background: #fbe7e6;
+    color: #b3261e;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  .login-error.visible { display: block; }
+</style>
+</head>
+<body class="login-body">
+
+<form id="loginForm" class="login-card" autocomplete="off">
+  <div class="login-brand"><span class="dot">●</span><span class="name">SIM Line Scanner</span></div>
+  <p class="tagline">Safaricom Dealer Terminal — sign in to start scanning</p>
+
+  <p id="loginError" class="login-error"></p>
+
+  <label class="field">
+    <span>ID number</span>
+    <input id="idNumber" type="text" inputmode="numeric" placeholder="National ID / passport number" required />
+  </label>
+  <label class="field">
+    <span>Full name</span>
+    <input id="fullName" type="text" placeholder="As on your ID" required />
+  </label>
+
+  <button type="submit" class="btn btn-primary">Sign in</button>
+</form>
+
+<script src="/js/login.js"></script>
+</body>
+</html>

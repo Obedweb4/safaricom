@@ -19,8 +19,11 @@
     </div>
   </div>
   <div class="dealer-field">
-    <label for="dealerName">Dealer / Agent</label>
-    <input id="dealerName" type="text" placeholder="Your name or agent code" autocomplete="off" />
+    <div class="dealer-info">
+      <span class="dealer-info-label">Signed in as</span>
+      <span id="dealerDisplayName" class="dealer-info-name">…</span>
+    </div>
+    <button id="logoutBtn" class="btn btn-ghost small">Sign out</button>
   </div>
 </header>
 
