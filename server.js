@@ -16,6 +16,11 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/safari
 
 connectDB();
 
+// Render (and most hosts) terminate HTTPS at a proxy in front of the app,
+// so Express itself sees plain HTTP. Without this, secure session cookies
+// silently fail to persist and every login bounces straight back out.
+app.set('trust proxy', 1);
+
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 
