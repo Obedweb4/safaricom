@@ -20,11 +20,12 @@ const SimCardSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
-    // The dealer/agent who scanned this line (from their login session)
+    // The dealer/agent this line of stock is allocated to. Null until an
+    // admin allocates it - a BA can only scan lines allocated to them.
     dealer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Dealer',
-      required: true,
+      default: null,
       index: true,
     },
     // Denormalized snapshot of the dealer's details at scan time, so the
@@ -50,18 +51,23 @@ const SimCardSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // unallocated -> just added to stock by admin, no BA assigned yet
+    // allocated   -> assigned to a BA, waiting to be scanned
+    // scanned/registered/activated/rejected -> the BA has processed it
     status: {
       type: String,
-      enum: ['scanned', 'registered', 'activated', 'rejected'],
-      default: 'scanned',
+      enum: ['unallocated', 'allocated', 'scanned', 'registered', 'activated', 'rejected'],
+      default: 'unallocated',
     },
     notes: {
       type: String,
       trim: true,
     },
+    allocatedAt: {
+      type: Date,
+    },
     scannedAt: {
       type: Date,
-      default: Date.now,
     },
   },
   { timestamps: true }

@@ -19,9 +19,14 @@ const DealerSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    // Only admin-created dealers may log in. Set false to suspend a BA
+    // without deleting their history of scanned lines.
+    active: {
+      type: Boolean,
+      default: true,
+    },
     lastLoginAt: {
       type: Date,
-      default: Date.now,
     },
   },
   { timestamps: true }
