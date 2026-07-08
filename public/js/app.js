@@ -1,12 +1,13 @@
-const form = document.getElementById('detailsForm');
-const barcodeInput = document.getElementById('barcode');
-const formMessage = document.getElementById('formMessage');
+const saveMessage = document.getElementById('saveMessage');
 const ledgerStrip = document.getElementById('ledgerStrip');
 const ledgerEmpty = document.getElementById('ledgerEmpty');
 const searchInput = document.getElementById('searchInput');
-const clearBtn = document.getElementById('clearBtn');
 const dealerDisplayName = document.getElementById('dealerDisplayName');
 const logoutBtn = document.getElementById('logoutBtn');
+
+const allocatedStrip = document.getElementById('allocatedStrip');
+const allocatedEmpty = document.getElementById('allocatedEmpty');
+const allocatedCount = document.getElementById('allocatedCount');
 
 const modeScanBtn = document.getElementById('modeScanBtn');
 const modeManualBtn = document.getElementById('modeManualBtn');
@@ -16,6 +17,7 @@ const manualBarcode = document.getElementById('manualBarcode');
 const useManualBtn = document.getElementById('useManualBtn');
 
 let searchDebounce = null;
+let saving = false;
 
 // ---- Scan vs. manual entry toggle ----
 function showScanMode() {
@@ -46,11 +48,9 @@ useManualBtn.addEventListener('click', () => {
     manualBarcode.focus();
     return;
   }
-  barcodeInput.value = value;
-  barcodeInput.dataset.format = 'MANUAL';
-  showMessage(`Serial entered: ${value}`, 'success');
+  saveLine(value, 'MANUAL');
   manualBarcode.value = '';
-  document.getElementById('msisdn').focus();
+  manualBarcode.focus();
 });
 
 manualBarcode.addEventListener('keydown', (e) => {
@@ -85,6 +85,28 @@ logoutBtn.addEventListener('click', async () => {
   window.location.href = '/login.html';
 });
 
+function renderAllocated(pending) {
+  allocatedStrip.querySelectorAll('.ledger-row').forEach((el) => el.remove());
+  allocatedCount.textContent = `${pending.length} pending`;
+
+  if (!pending.length) {
+    allocatedEmpty.hidden = false;
+    return;
+  }
+  allocatedEmpty.hidden = true;
+
+  pending.forEach((line) => {
+    const row = document.createElement('div');
+    row.className = 'ledger-row';
+    row.style.gridTemplateColumns = '1fr auto';
+    row.innerHTML = `
+      <span class="cell-barcode">${escapeHtml(line.barcode)}</span>
+      <span><span class="status-pill pending">Pending</span></span>
+    `;
+    allocatedStrip.appendChild(row);
+  });
+}
+
 async function loadStockOverview() {
   try {
     const [mineRes, summaryRes] = await Promise.all([
@@ -96,6 +118,7 @@ async function loadStockOverview() {
       document.getElementById('myAllocated').textContent = mine.allocated ?? '0';
       document.getElementById('myScanned').textContent = mine.scanned ?? '0';
       document.getElementById('myRemaining').textContent = mine.remaining ?? '0';
+      renderAllocated(mine.pending || []);
     }
     if (summaryRes.ok) {
       const summary = await summaryRes.json();
@@ -110,17 +133,15 @@ async function loadStockOverview() {
 loadSession();
 loadStockOverview();
 
-// Called by scanner.js whenever a barcode is decoded from the camera
+// Called by scanner.js whenever a barcode is decoded from the camera —
+// saves straight to the ledger, no form step.
 window.onBarcodeScanned = (text, format) => {
-  barcodeInput.value = text;
-  barcodeInput.dataset.format = format || '';
-  showMessage(`Scanned: ${text}`, 'success');
-  barcodeInput.focus();
+  saveLine(text, format);
 };
 
 function showMessage(text, kind) {
-  formMessage.textContent = text;
-  formMessage.className = `form-message ${kind || ''}`;
+  saveMessage.textContent = text;
+  saveMessage.className = `form-message ${kind || ''}`;
 }
 
 function statusLabel(status) {
@@ -171,30 +192,22 @@ async function loadLedger(query = '') {
   }
 }
 
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  showMessage('Saving…', '');
+// Saves a scanned/typed serial straight to the ledger. No customer/MSISDN
+// form step — the priority is a zero-friction scan-and-save flow. Details
+// can still be edited later via the admin dashboard.
+async function saveLine(barcode, format) {
+  if (saving) return; // avoid double-submits from rapid re-scans
+  const trimmed = (barcode || '').trim();
+  if (!trimmed) return;
 
-  const payload = {
-    barcode: barcodeInput.value.trim(),
-    barcodeFormat: barcodeInput.dataset.format || '',
-    msisdn: document.getElementById('msisdn').value.trim(),
-    customerName: document.getElementById('customerName').value.trim(),
-    customerIdNumber: document.getElementById('customerIdNumber').value.trim(),
-    status: document.getElementById('status').value,
-    notes: document.getElementById('notes').value.trim(),
-  };
-
-  if (!payload.barcode) {
-    showMessage('Scan or enter a barcode first.', 'error');
-    return;
-  }
+  saving = true;
+  showMessage(`Saving ${trimmed}…`, '');
 
   try {
     const res = await fetch('/api/simcards', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ barcode: trimmed, barcodeFormat: format || '' }),
     });
     if (res.status === 401) {
       window.location.href = '/login.html';
@@ -208,21 +221,16 @@ form.addEventListener('submit', async (e) => {
       return;
     }
 
-    showMessage('Line saved to the ledger.', 'success');
-    form.reset();
-    document.getElementById('status').value = 'scanned';
+    showMessage(`Saved ${trimmed} to the ledger.`, 'success');
     loadLedger(searchInput.value.trim());
     loadStockOverview();
   } catch (err) {
     console.error(err);
     showMessage('Network error - could not reach the server.', 'error');
+  } finally {
+    saving = false;
   }
-});
-
-clearBtn.addEventListener('click', () => {
-  form.reset();
-  showMessage('', '');
-});
+}
 
 searchInput.addEventListener('input', () => {
   clearTimeout(searchDebounce);
