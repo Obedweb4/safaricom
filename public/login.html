@@ -10,15 +10,38 @@
 <style>
   body.login-body {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
     background: var(--charcoal);
   }
   .login-topbar {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 16px 20px;
+    padding: clamp(14px, 3vw, 20px) clamp(16px, 4vw, 28px);
+  }
+  .login-topbar::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 3px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--green) 0px, var(--green) 3px,
+      transparent 3px, transparent 6px,
+      var(--amber) 6px, var(--amber) 7px,
+      transparent 7px, transparent 12px,
+      var(--green) 12px, var(--green) 16px,
+      transparent 16px, transparent 19px
+    );
+    background-size: 220px 100%;
+    animation: barcode-scroll 14s linear infinite;
+    opacity: 0.9;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .login-topbar::after { animation: none; }
   }
   .login-topbar .brand-mini {
     display: flex;
@@ -27,9 +50,12 @@
     color: #cfd8d3;
     font-family: var(--font-display);
     font-weight: 700;
-    font-size: 15px;
+    font-size: clamp(15px, 3vw, 18px);
   }
-  .login-topbar .brand-mini .dot { color: var(--green); }
+  .login-topbar .brand-mini .dot {
+    color: var(--green-bright);
+    text-shadow: 0 0 10px rgba(31, 224, 127, 0.55);
+  }
   .top-admin-btn {
     background: transparent;
     border: 1px solid #33403a;
@@ -57,7 +83,8 @@
     max-width: 380px;
     background: #fff;
     border-radius: var(--radius);
-    padding: 32px 28px;
+    padding: clamp(24px, 6vw, 32px) clamp(20px, 5vw, 28px);
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.35);
   }
   .login-brand {
     display: flex;
@@ -65,11 +92,12 @@
     gap: 8px;
     margin-bottom: 4px;
   }
-  .login-brand span.dot { color: var(--green); font-size: 18px; }
+  .login-brand span.dot { color: var(--green); font-size: clamp(18px, 4vw, 22px); }
   .login-brand span.name {
     font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 18px;
+    font-weight: 800;
+    font-size: clamp(19px, 4.5vw, 23px);
+    letter-spacing: -0.01em;
   }
   .login-card p.tagline {
     color: var(--muted);
@@ -89,13 +117,30 @@
   }
   .login-error.visible { display: block; }
   .powered-by {
+    flex-shrink: 0;
+    position: relative;
     text-align: center;
-    color: #7b8a83;
+    color: #8fa39a;
     font-size: 12px;
-    padding: 0 0 20px;
+    padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
     letter-spacing: 0.02em;
   }
-  .powered-by strong { color: #cfd8d3; }
+  .powered-by::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: repeating-linear-gradient(
+      90deg,
+      var(--green) 0px, var(--green) 3px,
+      transparent 3px, transparent 6px,
+      var(--amber) 6px, var(--amber) 7px,
+      transparent 7px, transparent 12px,
+      var(--green) 12px, var(--green) 16px,
+      transparent 16px, transparent 19px
+    );
+  }
+  .powered-by strong { color: #fff; font-weight: 600; }
 </style>
 </head>
 <body class="login-body">
