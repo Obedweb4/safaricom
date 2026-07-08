@@ -539,6 +539,7 @@ h2 {
 .status-pill.registered { background: #e4f5ea; color: var(--green-dark); }
 .status-pill.activated { background: #dff3e3; color: #06341f; }
 .status-pill.rejected { background: #fbe7e6; color: #b3261e; }
+.status-pill.pending { background: #fdf0d5; color: #8a5a00; }
 
 .ledger-row .row-delete {
   background: none;
