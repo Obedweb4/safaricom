@@ -17,4 +17,13 @@ function requireAnyAuth(req, res, next) {
   return res.status(401).json({ error: 'Not logged in' });
 }
 
-module.exports = { requireDealer, requireAnyAuth };
+// Requires an admin session specifically - used for admin-only data like
+// the full staff/dealer directory.
+function requireAdmin(req, res, next) {
+  if (req.session && req.session.isAdmin) {
+    return next();
+  }
+  return res.status(401).json({ error: 'Admin login required' });
+}
+
+module.exports = { requireDealer, requireAnyAuth, requireAdmin };
