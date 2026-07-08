@@ -10,11 +10,11 @@
 <style>
   .stats-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 14px;
     margin-bottom: 20px;
   }
-  @media (max-width: 700px) {
+  @media (max-width: 900px) {
     .stats-row { grid-template-columns: repeat(2, 1fr); }
   }
   .stat-card {
@@ -35,7 +35,7 @@
     font-weight: 700;
     margin-top: 4px;
   }
-  .admin-layout { max-width: 1160px; margin: 0 auto; padding: 24px; }
+  .admin-layout { max-width: 1160px; margin: 0 auto; padding: 24px; display: flex; flex-direction: column; gap: 20px; }
   .status-filter {
     border: 1px solid var(--line);
     border-radius: 8px;
@@ -43,6 +43,116 @@
     font-size: 13px;
     background: #fff;
   }
+  .admin-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .admin-tab-btn {
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .admin-tab-btn.active {
+    background: var(--charcoal);
+    color: #fff;
+    border-color: var(--charcoal);
+  }
+  .admin-panel { display: none; }
+  .admin-panel.active { display: block; }
+  .panel-card {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 18px;
+  }
+  .panel-card h2 { margin-bottom: 16px; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 860px) {
+    .two-col { grid-template-columns: 1fr; }
+  }
+  .panel-card textarea {
+    width: 100%;
+    min-height: 110px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: var(--font-mono);
+    resize: vertical;
+  }
+  .panel-card .field { margin-bottom: 12px; }
+  .panel-card .field input,
+  .panel-card .field select { width: 100%; }
+  .inline-form-actions { display: flex; gap: 10px; align-items: center; margin-top: 4px; }
+  .form-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin: 8px 0 0;
+  }
+  .form-feedback {
+    font-size: 13px;
+    margin: 10px 0 0;
+    min-height: 16px;
+  }
+  .form-feedback.success { color: var(--green-dark); }
+  .form-feedback.error { color: #b3261e; }
+  .allocate-mode-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
+  .allocate-mode-toggle button {
+    flex: 1;
+    border: 1px solid var(--line);
+    background: #fff;
+    color: var(--muted);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .allocate-mode-toggle button.active {
+    background: var(--green);
+    color: #fff;
+    border-color: var(--green);
+  }
+  table.ba-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  table.ba-table th {
+    text-align: left;
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--line);
+  }
+  table.ba-table td {
+    padding: 10px 6px;
+    border-bottom: 1px dashed var(--line);
+    vertical-align: middle;
+  }
+  .ba-status-pill {
+    display: inline-block;
+    padding: 3px 9px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .ba-status-pill.active { background: #e4f5ea; color: var(--green-dark); }
+  .ba-status-pill.inactive { background: #fbe7e6; color: #b3261e; }
+  .ba-table .btn.small { padding: 5px 10px; font-size: 12px; }
 </style>
 </head>
 <body>
@@ -67,36 +177,123 @@
 <main class="admin-layout">
 
   <div class="stats-row">
-    <div class="stat-card"><div class="stat-label">Total lines</div><div class="stat-value" id="statTotal">–</div></div>
+    <div class="stat-card"><div class="stat-label">Total stock</div><div class="stat-value" id="statTotal">–</div></div>
+    <div class="stat-card"><div class="stat-label">Unallocated</div><div class="stat-value" id="statUnallocated">–</div></div>
+    <div class="stat-card"><div class="stat-label">Allocated</div><div class="stat-value" id="statAllocated">–</div></div>
     <div class="stat-card"><div class="stat-label">Scanned</div><div class="stat-value" id="statScanned">–</div></div>
-    <div class="stat-card"><div class="stat-label">Registered</div><div class="stat-value" id="statRegistered">–</div></div>
     <div class="stat-card"><div class="stat-label">Activated</div><div class="stat-value" id="statActivated">–</div></div>
   </div>
 
-  <section class="ledger-card" aria-label="All scanned lines">
-    <div class="ledger-head">
-      <h2>All scanned lines</h2>
-      <div class="ledger-actions">
-        <select id="dealerFilter" class="status-filter">
-          <option value="">All BAs</option>
-        </select>
-        <select id="staffFilter" class="status-filter">
-          <option value="">All staff (BAs)</option>
-        </select>
-        <select id="statusFilter" class="status-filter">
-          <option value="">All statuses</option>
-          <option value="scanned">Scanned</option>
-          <option value="registered">Registered</option>
-          <option value="activated">Activated</option>
-          <option value="rejected">Rejected</option>
-        </select>
-        <input id="searchInput" type="search" placeholder="Search barcode, MSISDN, dealer, customer…" />
-        <a id="exportLink" class="btn btn-ghost small" href="/api/simcards/export.csv">Export CSV</a>
+  <div class="admin-tabs">
+    <button class="admin-tab-btn active" data-panel="ledgerPanel" type="button">Scanned lines</button>
+    <button class="admin-tab-btn" data-panel="stockPanel" type="button">Stock &amp; allocation</button>
+    <button class="admin-tab-btn" data-panel="baPanel" type="button">Manage BAs</button>
+  </div>
+
+  <!-- Manage BAs -->
+  <section class="admin-panel" id="baPanel">
+    <div class="panel-card">
+      <h2>Add a new BA</h2>
+      <form id="addBaForm" class="two-col" style="align-items:end;">
+        <label class="field">
+          <span>ID number</span>
+          <input id="baIdNumber" type="text" placeholder="National ID / passport number" required />
+        </label>
+        <label class="field">
+          <span>Full name</span>
+          <input id="baFullName" type="text" placeholder="As on their ID" required />
+        </label>
+        <label class="field">
+          <span>Dealer code (optional)</span>
+          <input id="baDealerCode" type="text" placeholder="e.g. DWD-014" />
+        </label>
+        <div class="inline-form-actions">
+          <button type="submit" class="btn btn-primary">Add BA</button>
+        </div>
+      </form>
+      <p class="form-note">Only BAs added here can sign in. They log in with the exact ID number + full name you enter.</p>
+      <p id="addBaFeedback" class="form-feedback"></p>
+    </div>
+
+    <div class="panel-card">
+      <h2>All BAs</h2>
+      <table class="ba-table">
+        <thead>
+          <tr>
+            <th>Name</th><th>ID number</th><th>Code</th><th>Allocated</th><th>Scanned</th><th>Remaining</th><th>Status</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="baTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Stock & allocation -->
+  <section class="admin-panel" id="stockPanel">
+    <div class="two-col">
+      <div class="panel-card">
+        <h2>Add stock</h2>
+        <label class="field">
+          <span>Barcodes / serial numbers</span>
+          <textarea id="stockAddInput" placeholder="Paste one barcode per line (or comma separated)"></textarea>
+        </label>
+        <button id="stockAddBtn" class="btn btn-primary" type="button">Add to stock</button>
+        <p class="form-note">These land in the unallocated pool until you assign them to a BA.</p>
+        <p id="stockAddFeedback" class="form-feedback"></p>
+      </div>
+
+      <div class="panel-card">
+        <h2>Allocate stock to a BA</h2>
+        <label class="field">
+          <span>BA</span>
+          <select id="allocateDealerSelect"></select>
+        </label>
+        <div class="allocate-mode-toggle">
+          <button id="allocateByCountBtn" class="active" type="button">By quantity</button>
+          <button id="allocateByListBtn" type="button">By exact barcodes</button>
+        </div>
+        <div id="allocateByCount">
+          <label class="field">
+            <span>How many lines</span>
+            <input id="allocateCount" type="number" min="1" placeholder="e.g. 50" />
+          </label>
+        </div>
+        <div id="allocateByList" hidden>
+          <label class="field">
+            <span>Barcodes / serial numbers</span>
+            <textarea id="allocateBarcodesInput" placeholder="Paste the exact barcodes to allocate"></textarea>
+          </label>
+        </div>
+        <button id="allocateBtn" class="btn btn-primary" type="button">Allocate</button>
+        <p id="allocateFeedback" class="form-feedback"></p>
       </div>
     </div>
-    <div class="ledger-strip" id="ledgerStrip">
-      <p class="ledger-empty" id="ledgerEmpty">No lines scanned yet.</p>
-    </div>
+  </section>
+
+  <!-- Ledger of scanned lines -->
+  <section class="admin-panel active" id="ledgerPanel">
+    <section class="ledger-card" aria-label="All scanned lines">
+      <div class="ledger-head">
+        <h2>Scanned lines</h2>
+        <div class="ledger-actions">
+          <select id="staffFilter" class="status-filter">
+            <option value="">All BAs</option>
+          </select>
+          <select id="statusFilter" class="status-filter">
+            <option value="">All statuses</option>
+            <option value="scanned">Scanned</option>
+            <option value="registered">Registered</option>
+            <option value="activated">Activated</option>
+            <option value="rejected">Rejected</option>
+          </select>
+          <input id="searchInput" type="search" placeholder="Search barcode, MSISDN, dealer, customer…" />
+          <a id="exportLink" class="btn btn-ghost small" href="/api/simcards/export.csv">Export CSV</a>
+        </div>
+      </div>
+      <div class="ledger-strip" id="ledgerStrip">
+        <p class="ledger-empty" id="ledgerEmpty">No lines scanned yet.</p>
+      </div>
+    </section>
   </section>
 
 </main>

@@ -30,6 +30,17 @@
 
 <main class="layout">
 
+  <!-- Stock allocation summary -->
+  <section class="ledger-card" aria-label="Stock overview" style="grid-column: 1 / -1;">
+    <div class="stats-row-ba">
+      <div><span class="stat-tag">My allocated</span><strong id="myAllocated">–</strong></div>
+      <div><span class="stat-tag">My scanned</span><strong id="myScanned">–</strong></div>
+      <div><span class="stat-tag">My remaining</span><strong id="myRemaining">–</strong></div>
+      <div><span class="stat-tag">Company total stock</span><strong id="companyTotal">–</strong></div>
+      <div><span class="stat-tag">Company unallocated</span><strong id="companyUnallocated">–</strong></div>
+    </div>
+  </section>
+
   <!-- Scanner panel -->
   <section class="scanner-card" aria-label="Barcode scanner">
     <div class="mode-toggle" role="tablist">
