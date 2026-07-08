@@ -85,7 +85,30 @@ logoutBtn.addEventListener('click', async () => {
   window.location.href = '/login.html';
 });
 
+async function loadStockOverview() {
+  try {
+    const [mineRes, summaryRes] = await Promise.all([
+      fetch('/api/stock/mine'),
+      fetch('/api/stock/summary'),
+    ]);
+    if (mineRes.ok) {
+      const mine = await mineRes.json();
+      document.getElementById('myAllocated').textContent = mine.allocated ?? '0';
+      document.getElementById('myScanned').textContent = mine.scanned ?? '0';
+      document.getElementById('myRemaining').textContent = mine.remaining ?? '0';
+    }
+    if (summaryRes.ok) {
+      const summary = await summaryRes.json();
+      document.getElementById('companyTotal').textContent = summary.total ?? '0';
+      document.getElementById('companyUnallocated').textContent = summary.unallocated ?? '0';
+    }
+  } catch (err) {
+    console.error('Failed to load stock overview', err);
+  }
+}
+
 loadSession();
+loadStockOverview();
 
 // Called by scanner.js whenever a barcode is decoded from the camera
 window.onBarcodeScanned = (text, format) => {
@@ -121,13 +144,8 @@ function renderLedger(records) {
       <span class="cell-muted">${escapeHtml(rec.msisdn || '—')}</span>
       <span class="cell-muted">${escapeHtml(rec.dealerName || '—')}</span>
       <span><span class="status-pill ${rec.status}">${statusLabel(rec.status)}</span></span>
-      <button class="row-delete" data-id="${rec._id}">Remove</button>
     `;
     ledgerStrip.appendChild(row);
-  });
-
-  ledgerStrip.querySelectorAll('.row-delete').forEach((btn) => {
-    btn.addEventListener('click', () => deleteRecord(btn.dataset.id));
   });
 }
 
@@ -150,16 +168,6 @@ async function loadLedger(query = '') {
     renderLedger(data.records || []);
   } catch (err) {
     console.error('Failed to load ledger', err);
-  }
-}
-
-async function deleteRecord(id) {
-  if (!confirm('Remove this line from the ledger?')) return;
-  try {
-    await fetch(`/api/simcards/${id}`, { method: 'DELETE' });
-    loadLedger(searchInput.value.trim());
-  } catch (err) {
-    console.error(err);
   }
 }
 
@@ -204,6 +212,7 @@ form.addEventListener('submit', async (e) => {
     form.reset();
     document.getElementById('status').value = 'scanned';
     loadLedger(searchInput.value.trim());
+    loadStockOverview();
   } catch (err) {
     console.error(err);
     showMessage('Network error - could not reach the server.', 'error');
