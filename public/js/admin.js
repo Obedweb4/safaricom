@@ -2,6 +2,8 @@ const ledgerStrip = document.getElementById('ledgerStrip');
 const ledgerEmpty = document.getElementById('ledgerEmpty');
 const searchInput = document.getElementById('searchInput');
 const statusFilter = document.getElementById('statusFilter');
+const staffFilter = document.getElementById('staffFilter');
+const exportLink = document.getElementById('exportLink');
 const adminDisplayEmail = document.getElementById('adminDisplayEmail');
 const logoutBtn = document.getElementById('logoutBtn');
 
@@ -40,6 +42,36 @@ function statusLabel(status) {
   return status.charAt(0).toUpperCase() + status.slice(1);
 }
 
+// Populate the "filter by staff" dropdown with every BA who has an account,
+// each showing how many lines they've scanned so far.
+async function loadStaffList() {
+  try {
+    const res = await fetch('/api/dealers');
+    if (!res.ok) return;
+    const dealers = await res.json();
+
+    dealers.forEach((d) => {
+      const opt = document.createElement('option');
+      opt.value = d._id;
+      opt.textContent = `${d.fullName} (${d.lineCount})`;
+      staffFilter.appendChild(opt);
+    });
+  } catch (err) {
+    console.error('Failed to load staff list', err);
+  }
+}
+
+function currentParams() {
+  const params = new URLSearchParams();
+  const q = searchInput.value.trim();
+  const status = statusFilter.value;
+  const dealer = staffFilter.value;
+  if (q) params.set('q', q);
+  if (status) params.set('status', status);
+  if (dealer) params.set('dealer', dealer);
+  return params;
+}
+
 function renderLedger(records) {
   ledgerStrip.querySelectorAll('.ledger-row').forEach((el) => el.remove());
 
@@ -69,11 +101,11 @@ function renderLedger(records) {
 
 async function loadLedger() {
   try {
-    const params = new URLSearchParams({ limit: '100' });
-    const q = searchInput.value.trim();
-    const status = statusFilter.value;
-    if (q) params.set('q', q);
-    if (status) params.set('status', status);
+    const params = currentParams();
+    params.set('limit', '100');
+
+    // Keep the CSV export link in sync with whatever filters are active
+    exportLink.href = `/api/simcards/export.csv?${params.toString()}`;
 
     const res = await fetch(`/api/simcards?${params.toString()}`);
     if (res.status === 401) {
@@ -121,7 +153,9 @@ searchInput.addEventListener('input', () => {
 });
 
 statusFilter.addEventListener('change', loadLedger);
+staffFilter.addEventListener('change', loadLedger);
 
 loadSession();
+loadStaffList();
 loadLedger();
 loadStats();
