@@ -8,6 +8,7 @@ const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const simcardRoutes = require('./routes/simcards');
 const dealerRoutes = require('./routes/dealers');
+const stockRoutes = require('./routes/stock');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -36,6 +37,7 @@ app.use(
 app.use('/api/auth', authRoutes);
 app.use('/api/simcards', simcardRoutes);
 app.use('/api/dealers', dealerRoutes);
+app.use('/api/stock', stockRoutes);
 
 // The scanner page is for dealers; admins get their own dashboard instead.
 app.get(['/', '/index.html'], (req, res, next) => {
