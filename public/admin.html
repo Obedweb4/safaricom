@@ -77,6 +77,12 @@
     <div class="ledger-head">
       <h2>All scanned lines</h2>
       <div class="ledger-actions">
+        <select id="dealerFilter" class="status-filter">
+          <option value="">All BAs</option>
+        </select>
+        <select id="staffFilter" class="status-filter">
+          <option value="">All staff (BAs)</option>
+        </select>
         <select id="statusFilter" class="status-filter">
           <option value="">All statuses</option>
           <option value="scanned">Scanned</option>
@@ -85,7 +91,7 @@
           <option value="rejected">Rejected</option>
         </select>
         <input id="searchInput" type="search" placeholder="Search barcode, MSISDN, dealer, customer…" />
-        <a class="btn btn-ghost small" href="/api/simcards/export.csv">Export CSV</a>
+        <a id="exportLink" class="btn btn-ghost small" href="/api/simcards/export.csv">Export CSV</a>
       </div>
     </div>
     <div class="ledger-strip" id="ledgerStrip">

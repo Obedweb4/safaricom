@@ -11,9 +11,45 @@
   body.login-body {
     min-height: 100vh;
     display: flex;
+    flex-direction: column;
+    background: var(--charcoal);
+  }
+  .login-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+  }
+  .login-topbar .brand-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #cfd8d3;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .login-topbar .brand-mini .dot { color: var(--green); }
+  .top-admin-btn {
+    background: transparent;
+    border: 1px solid #33403a;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .top-admin-btn:hover { background: #1d2527; }
+  .top-admin-btn.active {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .login-center {
+    flex: 1;
+    display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--charcoal);
     padding: 20px;
   }
   .login-card {
@@ -38,28 +74,7 @@
   .login-card p.tagline {
     color: var(--muted);
     font-size: 13px;
-    margin: 0 0 20px;
-  }
-  .login-tabs {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  .login-tab {
-    flex: 1;
-    border: 1px solid var(--line);
-    background: #fff;
-    color: var(--muted);
-    border-radius: 8px;
-    padding: 9px 10px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-  .login-tab.active {
-    background: var(--charcoal);
-    color: #fff;
-    border-color: var(--charcoal);
+    margin: 0 0 22px;
   }
   .login-card .field { margin-bottom: 16px; }
   .login-card button[type="submit"] { width: 100%; justify-content: center; margin-top: 6px; }
@@ -77,7 +92,7 @@
     text-align: center;
     color: #7b8a83;
     font-size: 12px;
-    margin-top: 18px;
+    padding: 0 0 20px;
     letter-spacing: 0.02em;
   }
   .powered-by strong { color: #cfd8d3; }
@@ -85,42 +100,44 @@
 </head>
 <body class="login-body">
 
-<div class="login-card">
-  <div class="login-brand"><span class="dot">●</span><span class="name">Dream World Dealer</span></div>
-  <p class="tagline">Sign in to start scanning SIM lines</p>
+<div class="login-topbar">
+  <div class="brand-mini"><span class="dot">●</span> Dream World Dealer</div>
+  <button id="topAdminBtn" class="top-admin-btn" type="button">Admin Login</button>
+</div>
 
-  <div class="login-tabs">
-    <button id="staffTabBtn" class="login-tab active" type="button">Staff</button>
-    <button id="adminTabBtn" class="login-tab" type="button">Admin</button>
+<div class="login-center">
+  <div class="login-card">
+    <div class="login-brand"><span class="dot">●</span><span class="name" id="cardTitle">Staff Sign In</span></div>
+    <p class="tagline" id="cardTagline">Sign in with your ID to start scanning SIM lines</p>
+
+    <p id="loginError" class="login-error"></p>
+
+    <!-- Staff login: ID number + full name -->
+    <form id="staffForm" autocomplete="off">
+      <label class="field">
+        <span>ID number</span>
+        <input id="idNumber" type="text" inputmode="numeric" placeholder="National ID / passport number" required />
+      </label>
+      <label class="field">
+        <span>Full name</span>
+        <input id="fullName" type="text" placeholder="As on your ID" required />
+      </label>
+      <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+
+    <!-- Admin login: email + password -->
+    <form id="adminForm" autocomplete="off" hidden>
+      <label class="field">
+        <span>Email</span>
+        <input id="adminEmail" type="email" placeholder="admin@example.com" required />
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input id="adminPassword" type="password" placeholder="••••••••" required />
+      </label>
+      <button type="submit" class="btn btn-primary">Sign in as admin</button>
+    </form>
   </div>
-
-  <p id="loginError" class="login-error"></p>
-
-  <!-- Staff login: ID number + full name -->
-  <form id="staffForm" autocomplete="off">
-    <label class="field">
-      <span>ID number</span>
-      <input id="idNumber" type="text" inputmode="numeric" placeholder="National ID / passport number" required />
-    </label>
-    <label class="field">
-      <span>Full name</span>
-      <input id="fullName" type="text" placeholder="As on your ID" required />
-    </label>
-    <button type="submit" class="btn btn-primary">Sign in</button>
-  </form>
-
-  <!-- Admin login: email + password -->
-  <form id="adminForm" autocomplete="off" hidden>
-    <label class="field">
-      <span>Email</span>
-      <input id="adminEmail" type="email" placeholder="admin@example.com" required />
-    </label>
-    <label class="field">
-      <span>Password</span>
-      <input id="adminPassword" type="password" placeholder="••••••••" required />
-    </label>
-    <button type="submit" class="btn btn-primary">Sign in as admin</button>
-  </form>
 </div>
 
 <p class="powered-by">Powered by <strong>Obed Tech</strong></p>
