@@ -64,7 +64,7 @@
       <div class="scanner-controls">
         <button id="stopBtn" class="btn btn-ghost" hidden>Stop camera</button>
         <select id="cameraSelect" class="camera-select" hidden></select>
-        <span id="scanStatus" class="scan-status">Point the camera at the barcode on the SIM pack</span>
+        <span id="scanStatus" class="scan-status">Point the camera at the barcode on the SIM pack — it saves automatically</span>
       </div>
     </div>
 
@@ -73,50 +73,23 @@
         <span>Serial / ICCID number</span>
         <input id="manualBarcode" type="text" placeholder="Type the serial number printed on the SIM pack" autocomplete="off" />
       </label>
-      <button id="useManualBtn" class="btn btn-primary" type="button">Use this serial</button>
-      <p class="scan-status">No camera needed — type the number and it fills the form below.</p>
+      <button id="useManualBtn" class="btn btn-primary" type="button">Save this serial</button>
+      <p class="scan-status">No camera needed — type the number and press save.</p>
     </div>
+
+    <p id="saveMessage" class="form-message" role="status"></p>
   </section>
 
-  <!-- Confirm / details panel -->
-  <section class="details-card" aria-label="SIM record details">
-    <h2>Line details</h2>
-    <form id="detailsForm">
-      <label class="field">
-        <span>Barcode / ICCID</span>
-        <input id="barcode" name="barcode" type="text" placeholder="Scan or type manually" required />
-      </label>
-      <label class="field">
-        <span>Mobile number (MSISDN)</span>
-        <input id="msisdn" name="msisdn" type="text" placeholder="07xx xxx xxx" />
-      </label>
-      <label class="field">
-        <span>Customer name</span>
-        <input id="customerName" name="customerName" type="text" placeholder="Optional" />
-      </label>
-      <label class="field">
-        <span>Customer ID number</span>
-        <input id="customerIdNumber" name="customerIdNumber" type="text" placeholder="Optional" />
-      </label>
-      <label class="field">
-        <span>Status</span>
-        <select id="status" name="status">
-          <option value="scanned">Scanned</option>
-          <option value="registered">Registered</option>
-          <option value="activated">Activated</option>
-          <option value="rejected">Rejected</option>
-        </select>
-      </label>
-      <label class="field">
-        <span>Notes</span>
-        <input id="notes" name="notes" type="text" placeholder="Optional" />
-      </label>
-      <div class="form-actions">
-        <button type="submit" class="btn btn-primary">Save line</button>
-        <button type="button" id="clearBtn" class="btn btn-ghost">Clear</button>
-      </div>
-      <p id="formMessage" class="form-message" role="status"></p>
-    </form>
+  <!-- Allocated lines: the serials admin has handed to this BA, not yet scanned -->
+  <section class="details-card" aria-label="My allocated lines">
+    <div class="ledger-head" style="margin-bottom: 10px;">
+      <h2 style="margin:0;">Allocated to me</h2>
+      <span id="allocatedCount" class="scan-status">–</span>
+    </div>
+    <p class="scan-status" style="margin: 0 0 12px;">Serials your admin has given you. Scan or type one below to check it off.</p>
+    <div class="ledger-strip" id="allocatedStrip" style="max-height: 480px;">
+      <p class="ledger-empty" id="allocatedEmpty">Nothing allocated to you yet — ask your admin.</p>
+    </div>
   </section>
 
   <!-- Ledger / recent scans -->
