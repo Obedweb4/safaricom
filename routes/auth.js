@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const Dealer = require('../models/Dealer');
 
-// POST /api/auth/login - identify by ID number + full name, create the
-// dealer record on first login, then start a session.
+// POST /api/auth/login - identify by ID number + full name. The BA must
+// already have been added by an admin; this route never creates a new
+// dealer record on its own.
 router.post('/login', async (req, res) => {
   try {
     const idNumber = String(req.body.idNumber || '').trim();
@@ -13,21 +14,29 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'ID number and full name are both required' });
     }
 
-    let dealer = await Dealer.findOne({ idNumber });
+    const dealer = await Dealer.findOne({ idNumber });
 
-    if (dealer) {
-      // Guard against someone else's ID number being reused with a different name
-      const sameName = dealer.fullName.trim().toLowerCase() === fullName.toLowerCase();
-      if (!sameName) {
-        return res.status(409).json({
-          error: 'This ID number is already registered under a different name. Check your details or contact your supervisor.',
-        });
-      }
-      dealer.lastLoginAt = new Date();
-      await dealer.save();
-    } else {
-      dealer = await Dealer.create({ idNumber, fullName, lastLoginAt: new Date() });
+    if (!dealer) {
+      return res.status(401).json({
+        error: 'You are not registered as a BA yet. Ask your admin to add you before signing in.',
+      });
     }
+
+    const sameName = dealer.fullName.trim().toLowerCase() === fullName.toLowerCase();
+    if (!sameName) {
+      return res.status(409).json({
+        error: 'This ID number is registered under a different name. Check your details or contact your admin.',
+      });
+    }
+
+    if (dealer.active === false) {
+      return res.status(403).json({
+        error: 'Your account has been deactivated. Contact your admin.',
+      });
+    }
+
+    dealer.lastLoginAt = new Date();
+    await dealer.save();
 
     // Clear any previous admin session before starting a dealer one
     req.session.isAdmin = false;
@@ -41,9 +50,6 @@ router.post('/login', async (req, res) => {
       fullName: dealer.fullName,
     });
   } catch (err) {
-    if (err.code === 11000) {
-      return res.status(409).json({ error: 'This ID number is already registered' });
-    }
     console.error(err);
     res.status(500).json({ error: 'Login failed' });
   }
