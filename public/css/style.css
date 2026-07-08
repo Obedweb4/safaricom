@@ -1,7 +1,9 @@
 :root {
   --green: #00A651;
   --green-dark: #05341f;
-  --charcoal: #12181a;
+  --green-bright: #1fe07f;
+  --charcoal: #10161a;
+  --charcoal-2: #1a2226;
   --bg: #f5f6f2;
   --panel: #ffffff;
   --ink: #1b1f1c;
@@ -19,37 +21,88 @@
 html, body {
   margin: 0;
   padding: 0;
+  height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-body);
+}
+
+body > main {
+  flex: 1 0 auto;
+  width: 100%;
 }
 
 button, input, select {
   font-family: inherit;
 }
 
+button, a.btn {
+  min-height: 40px;
+}
+
 /* ---------- Topbar ---------- */
 .topbar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 28px;
+  padding: clamp(14px, 3vw, 20px) clamp(16px, 4vw, 32px);
   background: var(--charcoal);
   color: #fff;
   flex-wrap: wrap;
 }
 
+/* Signature: a thin animated "barcode" strip along the bottom of the
+   topbar, echoing the SIM barcodes this app exists to scan. */
+.topbar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--green) 0px, var(--green) 3px,
+    transparent 3px, transparent 6px,
+    var(--amber) 6px, var(--amber) 7px,
+    transparent 7px, transparent 12px,
+    var(--green) 12px, var(--green) 16px,
+    transparent 16px, transparent 19px
+  );
+  background-size: 220px 100%;
+  animation: barcode-scroll 14s linear infinite;
+  opacity: 0.9;
+}
+
+@keyframes barcode-scroll {
+  from { background-position-x: 0; }
+  to { background-position-x: 220px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .topbar::after { animation: none; }
+}
+
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: clamp(10px, 2vw, 14px);
 }
 
 .brand-mark {
-  color: var(--green);
-  font-size: 20px;
+  color: var(--green-bright);
+  font-size: clamp(20px, 3vw, 26px);
   line-height: 1;
+  text-shadow: 0 0 14px rgba(31, 224, 127, 0.55);
 }
 
 .brand-text {
@@ -60,16 +113,17 @@ button, input, select {
 
 .brand-title {
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 18px;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  font-size: clamp(20px, 4.2vw, 30px);
+  letter-spacing: -0.015em;
 }
 
 .brand-sub {
-  font-size: 12px;
-  color: #b7c2bd;
-  letter-spacing: 0.03em;
+  font-size: clamp(11px, 1.6vw, 13px);
+  color: var(--green-bright);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .dealer-field {
@@ -110,7 +164,7 @@ button, input, select {
 .layout {
   max-width: 1160px;
   margin: 0 auto;
-  padding: 24px;
+  padding: clamp(14px, 3vw, 24px);
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
   gap: 20px;
@@ -203,13 +257,41 @@ h2 {
 
 /* ---------- Footer ---------- */
 .app-footer {
-  text-align: center;
-  padding: 24px 0 32px;
-  color: var(--muted);
+  flex-shrink: 0;
+  margin-top: 32px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px 20px calc(16px + env(safe-area-inset-bottom, 0px));
+  background: var(--charcoal);
+  color: #8fa39a;
   font-size: 12px;
   letter-spacing: 0.02em;
 }
-.app-footer strong { color: var(--ink); }
+.app-footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--green) 0px, var(--green) 3px,
+    transparent 3px, transparent 6px,
+    var(--amber) 6px, var(--amber) 7px,
+    transparent 7px, transparent 12px,
+    var(--green) 12px, var(--green) 16px,
+    transparent 16px, transparent 19px
+  );
+}
+.app-footer .brand-mark {
+  font-size: 10px;
+  text-shadow: none;
+}
+.app-footer strong { color: #fff; font-weight: 600; }
 
 /* ---------- Scanner ---------- */
 .scanner-bezel {
@@ -323,10 +405,11 @@ h2 {
 .btn:active { transform: scale(0.98); }
 
 .btn-primary {
-  background: var(--green);
-  color: #fff;
+  background: linear-gradient(135deg, var(--green-bright), var(--green));
+  color: #06341f;
+  box-shadow: 0 2px 10px rgba(0, 166, 81, 0.25);
 }
-.btn-primary:hover { background: var(--green-dark); }
+.btn-primary:hover { background: linear-gradient(135deg, var(--green), var(--green-dark)); color: #fff; }
 
 .btn-ghost {
   background: transparent;
@@ -476,4 +559,15 @@ h2 {
       "msisdn status"
       "dealer delete";
   }
+}
+
+/* ---------- Small phones ---------- */
+@media (max-width: 480px) {
+  .stats-row-ba,
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .topbar { justify-content: center; text-align: center; }
+  .dealer-field { width: 100%; justify-content: space-between; }
+  .ledger-actions { width: 100%; }
+  .ledger-actions input[type="search"] { flex: 1; min-width: 0; }
+  .app-footer { font-size: 11px; }
 }
