@@ -61,10 +61,11 @@ router.post('/', requireDealer, async (req, res) => {
 // GET /api/simcards - list records, newest first, with optional search + pagination
 router.get('/', requireAnyAuth, async (req, res) => {
   try {
-    const { q, status, page = 1, limit = 25 } = req.query;
+    const { q, status, dealer, page = 1, limit = 25 } = req.query;
     const filter = {};
 
     if (status) filter.status = status;
+    if (dealer) filter.dealer = dealer;
     if (q) {
       const regex = new RegExp(q, 'i');
       filter.$or = [
@@ -102,7 +103,22 @@ router.get('/', requireAnyAuth, async (req, res) => {
 // GET /api/simcards/export.csv - download all matching records as CSV
 router.get('/export.csv', requireAnyAuth, async (req, res) => {
   try {
-    const records = await SimCard.find().sort({ createdAt: -1 });
+    const { q, status, dealer } = req.query;
+    const filter = {};
+    if (status) filter.status = status;
+    if (dealer) filter.dealer = dealer;
+    if (q) {
+      const regex = new RegExp(q, 'i');
+      filter.$or = [
+        { barcode: regex },
+        { msisdn: regex },
+        { dealerName: regex },
+        { customerName: regex },
+        { customerIdNumber: regex },
+      ];
+    }
+
+    const records = await SimCard.find(filter).sort({ createdAt: -1 });
 
     const header = [
       'barcode',
