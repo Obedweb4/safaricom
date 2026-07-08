@@ -1,7 +1,7 @@
 {
-  "name": "safaricom-sim-scanner",
+  "name": "dream-world-dealer",
   "version": "1.0.0",
-  "description": "Web app for Safaricom dealers to scan SIM card barcodes and register them to a database",
+  "description": "Dream World Dealer - SIM line scanner and registration app, powered by Obed Tech",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

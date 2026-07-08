@@ -7,6 +7,7 @@ const path = require('path');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/auth');
 const simcardRoutes = require('./routes/simcards');
+const dealerRoutes = require('./routes/dealers');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -34,11 +35,21 @@ app.use(
 
 app.use('/api/auth', authRoutes);
 app.use('/api/simcards', simcardRoutes);
+app.use('/api/dealers', dealerRoutes);
 
-// The scanner page requires a logged-in session; everything else (login page,
-// css, js, favicon) is served normally.
+// The scanner page is for dealers; admins get their own dashboard instead.
 app.get(['/', '/index.html'], (req, res, next) => {
+  if (req.session && req.session.isAdmin) {
+    return res.redirect('/admin.html');
+  }
   if (!req.session || !req.session.dealerId) {
+    return res.redirect('/login.html');
+  }
+  next();
+});
+
+app.get('/admin.html', (req, res, next) => {
+  if (!req.session || !req.session.isAdmin) {
     return res.redirect('/login.html');
   }
   next();
