@@ -118,6 +118,31 @@ button, input, select {
 
 .ledger-card { grid-column: 1 / -1; }
 
+.stats-row-ba {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+@media (max-width: 700px) {
+  .stats-row-ba { grid-template-columns: repeat(2, 1fr); }
+}
+.stats-row-ba > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stats-row-ba .stat-tag {
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.stats-row-ba strong {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+}
+
 @media (max-width: 860px) {
   .layout { grid-template-columns: 1fr; }
 }
